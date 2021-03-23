@@ -516,6 +516,26 @@ namespace Mvc.Server
                 return SignIn(principal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
             }
 
+            else if (request.IsClientCredentialsGrantType())
+            {
+                // Note: the client credentials are automatically validated by OpenIddict:
+                // if client_id or client_secret are invalid, this action won't be invoked.
+
+                var identity = new ClaimsIdentity(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+                var claimsPrincipal = new ClaimsPrincipal(identity);
+                // Subject (sub) is a required field, we use the client id as the subject identifier here.
+                identity.AddClaim(OpenIddictConstants.Claims.Subject, request.ClientId ?? throw new InvalidOperationException());
+
+                // Add some claim, don't forget to add destination otherwise it won't be added to the access token.
+                identity.AddClaim("some-claim", "some-value", OpenIddictConstants.Destinations.AccessToken);
+
+                claimsPrincipal = new ClaimsPrincipal(identity);
+
+                claimsPrincipal.SetScopes(request.GetScopes());
+
+                return SignIn(claimsPrincipal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+            }
+
             throw new InvalidOperationException("The specified grant type is not supported.");
         }
         #endregion

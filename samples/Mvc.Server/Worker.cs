@@ -109,6 +109,23 @@ namespace Mvc.Server
                         }
                     });
                 }
+
+                if (await manager.FindByClientIdAsync("openiddictweb") is null)
+                {
+                    await manager.CreateAsync(new OpenIddictApplicationDescriptor
+                    {
+                        ClientId = "openiddictweb",
+                        ClientSecret = "688d8dc2aa923550b9773a0766557c37",
+                        DisplayName = "OpenIddict",
+                        Permissions =
+                    {
+                        OpenIddictConstants.Permissions.Endpoints.Token,
+                        OpenIddictConstants.Permissions.GrantTypes.ClientCredentials,
+                        OpenIddictConstants.Permissions.GrantTypes.RefreshToken,
+                        OpenIddictConstants.Permissions.Prefixes.Scope + "api"
+                    }
+                    });
+                }
             }
 
             static async Task RegisterScopesAsync(IServiceProvider provider)

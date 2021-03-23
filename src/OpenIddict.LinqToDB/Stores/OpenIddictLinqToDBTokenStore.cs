@@ -17,6 +17,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using LinqToDB;
+using LinqToDB.Data;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using OpenIddict.Abstractions;
@@ -34,7 +35,7 @@ namespace OpenIddict.LinqToDB
         OpenIddictLinqToDBTokenStore<OpenIddictLinqToDBToken,
                                                 OpenIddictLinqToDBApplication,
                                                 OpenIddictLinqToDBAuthorization, TContext, string>
-        where TContext : DataContext
+        where TContext : DataConnection
     {
         public OpenIddictLinqToDBTokenStore(
             IMemoryCache cache,
@@ -54,7 +55,7 @@ namespace OpenIddict.LinqToDB
         OpenIddictLinqToDBTokenStore<OpenIddictLinqToDBToken<TKey>,
                                                 OpenIddictLinqToDBApplication<TKey>,
                                                 OpenIddictLinqToDBAuthorization<TKey>, TContext, TKey>
-        where TContext : DataContext
+        where TContext : DataConnection
         where TKey : IEquatable<TKey>
     {
         public OpenIddictLinqToDBTokenStore(
@@ -78,7 +79,7 @@ namespace OpenIddict.LinqToDB
         where TToken : OpenIddictLinqToDBToken<TKey, TApplication, TAuthorization>
         where TApplication : OpenIddictLinqToDBApplication<TKey, TAuthorization, TToken>
         where TAuthorization : OpenIddictLinqToDBAuthorization<TKey, TApplication, TToken>
-        where TContext : DataContext
+        where TContext : DataConnection
         where TKey : IEquatable<TKey>
     {
         public OpenIddictLinqToDBTokenStore(
@@ -383,7 +384,12 @@ namespace OpenIddict.LinqToDB
                 return null;
             }
 
-            return ConvertIdentifierToString(token.Application.Id);
+            await Task.Run(() =>
+            {
+                return ConvertIdentifierToString(token.Application.Id);
+            });
+
+            return null;
         }
 
         /// <inheritdoc/>
@@ -427,7 +433,12 @@ namespace OpenIddict.LinqToDB
                 return null;
             }
 
-            return ConvertIdentifierToString(token.Authorization.Id);
+            await Task.Run(() =>
+            {
+                return ConvertIdentifierToString(token.Authorization.Id);
+            });
+
+            return null;
         }
 
         /// <inheritdoc/>

@@ -7,7 +7,9 @@
 using System;
 using System.Collections.Concurrent;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OpenIddict.Abstractions;
+using OpenIddict.Extensions;
 using OpenIddict.LinqToDB.Models;
 using SR = OpenIddict.Abstractions.OpenIddictResources;
 
@@ -18,11 +20,19 @@ namespace OpenIddict.LinqToDB
     /// </summary>
     public class OpenIddictLinqToDBTokenStoreResolver : IOpenIddictTokenStoreResolver
     {
-        private readonly ConcurrentDictionary<Type, Type> _cache = new ConcurrentDictionary<Type, Type>();
+        private readonly TypeResolutionCache _cache;
+        private readonly IOptionsMonitor<OpenIddictLinqToDBOptions> _options;
         private readonly IServiceProvider _provider;
 
-        public OpenIddictLinqToDBTokenStoreResolver(IServiceProvider provider)
-            => _provider = provider;
+        public OpenIddictLinqToDBTokenStoreResolver(
+            TypeResolutionCache cache,
+            IOptionsMonitor<OpenIddictLinqToDBOptions> options,
+            IServiceProvider provider)
+        {
+            _cache = cache;
+            _options = options;
+            _provider = provider;
+        }
 
         /// <summary>
         /// Returns a token store compatible with the specified token type or throws an
@@ -40,15 +50,33 @@ namespace OpenIddict.LinqToDB
 
             var type = _cache.GetOrAdd(typeof(TToken), key =>
             {
-                if (!typeof(OpenIddictLinqToDBToken).IsAssignableFrom(key))
+                var root = OpenIddictHelpers.FindGenericBaseType(key, typeof(OpenIddictLinqToDBToken<,,>));
+                if (root is null)
                 {
-                    throw new InvalidOperationException(SR.GetResourceString(SR.ID0260));
+                    throw new InvalidOperationException(SR.GetResourceString(SR.ID0256));
                 }
 
-                return typeof(OpenIddictLinqToDBTokenStore<>).MakeGenericType(key);
+                var context = _options.CurrentValue.DataContextType;
+                if (context is null)
+                {
+                    throw new InvalidOperationException(SR.GetResourceString(SR.ID0253));
+                }
+
+                return typeof(OpenIddictLinqToDBTokenStore<,,,,>).MakeGenericType(
+                    /* TToken: */ key,
+                    /* TApplication: */ root.GenericTypeArguments[1],
+                    /* TAuthorization: */ root.GenericTypeArguments[2],
+                    /* TContext: */ context,
+                    /* TKey: */ root.GenericTypeArguments[0]);
             });
 
             return (IOpenIddictTokenStore<TToken>)_provider.GetRequiredService(type);
         }
+
+        // Note: Entity Framework Core resolvers are registered as scoped dependencies as their inner
+        // service provider must be able to resolve scoped services (typically, the store they return).
+        // To avoid having to declare a static type resolution cache, a special cache service is used
+        // here and registered as a singleton dependency so that its content persists beyond the scope.
+        public class TypeResolutionCache : ConcurrentDictionary<Type, Type> { }
     }
 }

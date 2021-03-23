@@ -1,8 +1,13 @@
+using LinqToDB.AspNet;
+using LinqToDB.AspNet.Logging;
+using LinqToDB.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+//using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MongoDB.Driver;
 using Mvc.Server.Models;
 using Mvc.Server.Services;
 using Quartz;
@@ -29,7 +34,18 @@ namespace Mvc.Server
                 // Register the entity sets needed by OpenIddict.
                 // Note: use the generic overload if you need
                 // to replace the default OpenIddict entities.
-                options.UseOpenIddict();
+                //options.UseOpenIddict();
+            });
+
+            services.AddLinqToDbContext<DataConnection>((provider, options) =>
+            {
+                options
+                //will configure the AppDataConnection to use
+                //sqlserver with the provided connection string
+                //there are methods for each supported database
+                .UseSqlServer(Configuration.GetConnectionString("DefaultLinq2db"))
+                //default logging will log everything using the ILoggerFactory configured in the provider
+                .UseDefaultLogging(provider);
             });
 
             // Register the Identity services.
@@ -66,13 +82,15 @@ namespace Mvc.Server
                 {
                     // Configure OpenIddict to use the Entity Framework Core stores and models.
                     // Note: call ReplaceDefaultEntities() to replace the default OpenIddict entities.
-                    options.UseEntityFrameworkCore()
-                           .UseDbContext<ApplicationDbContext>();
+                    options.UseLinqToDB().UseDbContext<DataConnection>();//.UseDataConnection(new AppDataConnection(Configuration.GetConnectionString("DefaultLinq2db")));
+
+                    //options.UseEntityFrameworkCore()
+                    //    .UseDbContext<ApplicationDbContext>();
 
                     // Developers who prefer using MongoDB can remove the previous lines
                     // and configure OpenIddict to use the specified MongoDB database:
-                    // options.UseMongoDb()
-                    //        .UseDatabase(new MongoClient().GetDatabase("openiddict"));
+                    //options.UseMongoDb()
+                    //       .UseDatabase(new MongoClient().GetDatabase("openiddict"));
 
                     // Enable Quartz.NET integration.
                     options.UseQuartz();
@@ -94,7 +112,8 @@ namespace Mvc.Server
                     options.AllowAuthorizationCodeFlow()
                            .AllowDeviceCodeFlow()
                            .AllowPasswordFlow()
-                           .AllowRefreshTokenFlow();
+                           .AllowRefreshTokenFlow()
+                           .AllowClientCredentialsFlow();
 
                     // Mark the "email", "profile", "roles" and "demo_api" scopes as supported scopes.
                     options.RegisterScopes(Scopes.Email, Scopes.Profile, Scopes.Roles, "demo_api");

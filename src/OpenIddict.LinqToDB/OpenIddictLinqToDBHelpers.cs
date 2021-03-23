@@ -21,6 +21,6 @@ namespace Microsoft.EntityFrameworkCore
     /// </summary>
     public static class OpenIddictLinqToDBHelpers
     {
-
+        //TODO: Implement possible helpers if required.
     }
 }

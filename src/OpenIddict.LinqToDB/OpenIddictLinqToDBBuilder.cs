@@ -7,6 +7,7 @@
 using System;
 using System.ComponentModel;
 using LinqToDB;
+using LinqToDB.Data;
 using OpenIddict.Core;
 using OpenIddict.LinqToDB;
 using OpenIddict.LinqToDB.Models;
@@ -86,27 +87,27 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Configures the OpenIddict Linq2Db stores to use the specified database context type.
+        /// Configures the OpenIddict Entity Framework Core stores to use the specified database context type.
         /// </summary>
-        /// <typeparam name="TContext">The type of the <see cref="DataContext"/> used by OpenIddict.</typeparam>
+        /// <typeparam name="TContext">The type of the <see cref="DataConnection"/> used by OpenIddict.</typeparam>
         /// <returns>The <see cref="OpenIddictLinqToDBBuilder"/>.</returns>
-        public OpenIddictLinqToDBBuilder UseDataContext<TContext>()
-            where TContext : DataContext
-            => UseDataContext(typeof(TContext));
+        public OpenIddictLinqToDBBuilder UseDbContext<TContext>()
+            where TContext : DataConnection
+            => UseDbContext(typeof(TContext));
 
         /// <summary>
-        /// Configures the OpenIddict Linq2Db stores to use the specified database context type.
+        /// Configures the OpenIddict Entity Framework Core stores to use the specified database context type.
         /// </summary>
-        /// <param name="type">The type of the <see cref="DataContext"/> used by OpenIddict.</param>
+        /// <param name="type">The type of the <see cref="DataConnection"/> used by OpenIddict.</param>
         /// <returns>The <see cref="OpenIddictLinqToDBBuilder"/>.</returns>
-        public OpenIddictLinqToDBBuilder UseDataContext(Type type)
+        public OpenIddictLinqToDBBuilder UseDbContext(Type type)
         {
             if (type is null)
             {
                 throw new ArgumentNullException(nameof(type));
             }
 
-            if (!typeof(DataContext).IsAssignableFrom(type))
+            if (!typeof(DataConnection).IsAssignableFrom(type))
             {
                 throw new ArgumentException(SR.GetResourceString(SR.ID0232), nameof(type));
             }

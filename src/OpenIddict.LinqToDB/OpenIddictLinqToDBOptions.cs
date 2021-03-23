@@ -6,6 +6,7 @@
 
 using System;
 using LinqToDB;
+using LinqToDB.DataProvider;
 
 namespace OpenIddict.LinqToDB
 {
@@ -15,11 +16,7 @@ namespace OpenIddict.LinqToDB
     /// </summary>
     public class OpenIddictLinqToDBOptions
     {
-        /// <summary>
-        /// Gets or sets the concrete type of the <see cref="DataContext"/> used by the
-        /// OpenIddict Linq2Db stores. If this property is not populated,
-        /// an exception is thrown at runtime when trying to use the stores.
-        /// </summary>
+        //TODO: possible options if needed
         public Type? DataContextType { get; set; }
     }
 }

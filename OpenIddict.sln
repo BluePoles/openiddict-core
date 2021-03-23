@@ -111,9 +111,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenIddict.Quartz", "src\Op
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenIddict.Quartz.Tests", "test\OpenIddict.Quartz.Tests\OpenIddict.Quartz.Tests.csproj", "{01420929-33B8-4B60-A618-8C8B5F139630}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIddict.LinqToDB", "src\OpenIddict.LinqToDB\OpenIddict.LinqToDB.csproj", "{CEA9C006-5A80-4584-BDC2-3B080AC717F8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenIddict.LinqToDB", "src\OpenIddict.LinqToDB\OpenIddict.LinqToDB.csproj", "{CEA9C006-5A80-4584-BDC2-3B080AC717F8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIddict.LinqToDB.Models", "OpenIddict.LinqToDB.Models\OpenIddict.LinqToDB.Models.csproj", "{9B648CB4-C014-47FF-8BFC-09293702729C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenIddict.LinqToDB.Models", "OpenIddict.LinqToDB.Models\OpenIddict.LinqToDB.Models.csproj", "{9B648CB4-C014-47FF-8BFC-09293702729C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIddict.LinqToDB.Tests", "test\OpenIddict.LinqToDB.Tests\OpenIddict.LinqToDB.Tests.csproj", "{0F6C794A-BA2F-48D9-B5BA-1B20EBFB8621}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -269,6 +271,10 @@ Global
 		{9B648CB4-C014-47FF-8BFC-09293702729C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9B648CB4-C014-47FF-8BFC-09293702729C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9B648CB4-C014-47FF-8BFC-09293702729C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F6C794A-BA2F-48D9-B5BA-1B20EBFB8621}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F6C794A-BA2F-48D9-B5BA-1B20EBFB8621}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F6C794A-BA2F-48D9-B5BA-1B20EBFB8621}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F6C794A-BA2F-48D9-B5BA-1B20EBFB8621}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -311,6 +317,7 @@ Global
 		{01420929-33B8-4B60-A618-8C8B5F139630} = {5FC71D6A-A994-4F62-977F-88A7D25379D7}
 		{CEA9C006-5A80-4584-BDC2-3B080AC717F8} = {D544447C-D701-46BB-9A5B-C76C612A596B}
 		{9B648CB4-C014-47FF-8BFC-09293702729C} = {D544447C-D701-46BB-9A5B-C76C612A596B}
+		{0F6C794A-BA2F-48D9-B5BA-1B20EBFB8621} = {5FC71D6A-A994-4F62-977F-88A7D25379D7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A710059F-0466-4D48-9B3A-0EF4F840B616}

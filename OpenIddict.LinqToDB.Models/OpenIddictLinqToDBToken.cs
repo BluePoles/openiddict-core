@@ -4,6 +4,7 @@
  * the license and the contributors participating to this project.
  */
 
+using LinqToDB.Mapping;
 using System;
 using System.Diagnostics;
 
@@ -12,6 +13,8 @@ namespace OpenIddict.LinqToDB.Models
     /// <summary>
     /// Represents an OpenIddict token.
     /// </summary>
+    
+    [Table(Name = "OpenIddictTokens")]
     public class OpenIddictLinqToDBToken : OpenIddictLinqToDBToken<string, OpenIddictLinqToDBApplication, OpenIddictLinqToDBAuthorization>
     {
         public OpenIddictLinqToDBToken()
@@ -51,21 +54,28 @@ namespace OpenIddict.LinqToDB.Models
         /// <summary>
         /// Gets or sets the concurrency token.
         /// </summary>
+        [Column(Name = "ConcurrencyToken")]
         public virtual string? ConcurrencyToken { get; set; } = Guid.NewGuid().ToString();
 
         /// <summary>
         /// Gets or sets the UTC creation date of the current token.
         /// </summary>
+        /// 
+        [Column(Name = "CreationDate")]
         public virtual DateTime? CreationDate { get; set; }
 
         /// <summary>
         /// Gets or sets the UTC expiration date of the current token.
         /// </summary>
+        /// 
+        [Column(Name = "ExpirationDate")]
         public virtual DateTime? ExpirationDate { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier associated with the current token.
         /// </summary>
+        /// 
+        [PrimaryKey, Identity, Column(Name = "Id", SkipOnInsert = false, SkipOnUpdate = true)]
         public virtual TKey? Id { get; set; }
 
         /// <summary>
@@ -73,17 +83,20 @@ namespace OpenIddict.LinqToDB.Models
         /// Note: this property is only used for reference tokens
         /// and may be encrypted for security reasons.
         /// </summary>
+        [Column(Name = "Payload")]
         public virtual string? Payload { get; set; }
 
         /// <summary>
         /// Gets or sets the additional properties serialized as a JSON object,
         /// or <c>null</c> if no bag was associated with the current token.
         /// </summary>
+        [Column(Name = "Properties")]
         public virtual string? Properties { get; set; }
 
         /// <summary>
         /// Gets or sets the UTC redemption date of the current token.
         /// </summary>
+        [Column(Name = "RedemptionDate")]
         public virtual DateTime? RedemptionDate { get; set; }
 
         /// <summary>
@@ -92,21 +105,25 @@ namespace OpenIddict.LinqToDB.Models
         /// Note: this property is only used for reference tokens
         /// and may be hashed or encrypted for security reasons.
         /// </summary>
+        [Column(Name = "ReferenceId")]
         public virtual string? ReferenceId { get; set; }
 
         /// <summary>
         /// Gets or sets the status of the current token.
         /// </summary>
+        [Column(Name = "Status")]
         public virtual string? Status { get; set; }
 
         /// <summary>
         /// Gets or sets the subject associated with the current token.
         /// </summary>
+        [Column(Name = "Subject")]
         public virtual string? Subject { get; set; }
 
         /// <summary>
         /// Gets or sets the type of the current token.
         /// </summary>
+        [Column(Name = "Type")]
         public virtual string? Type { get; set; }
     }
 }

@@ -30,7 +30,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 throw new ArgumentNullException(nameof(builder));
             }
 
-            // Since Linq2Db may be used with databases performing case-insensitive
+            // Since Entity Framework Core may be used with databases performing case-insensitive
             // or culture-sensitive comparisons, ensure the additional filtering logic is enforced
             // in case case-sensitive stores were registered before this extension was called.
             builder.Configure(options => options.DisableAdditionalFiltering = false);
@@ -45,15 +45,15 @@ namespace Microsoft.Extensions.DependencyInjection
                    .ReplaceScopeStoreResolver<OpenIddictLinqToDBScopeStoreResolver>()
                    .ReplaceTokenStoreResolver<OpenIddictLinqToDBTokenStoreResolver>();
 
-            builder.Services.TryAddSingleton<OpenIddictLinqToDBApplicationStoreResolver>();
-            builder.Services.TryAddSingleton<OpenIddictLinqToDBAuthorizationStoreResolver>();
-            builder.Services.TryAddSingleton<OpenIddictLinqToDBScopeStoreResolver>();
-            builder.Services.TryAddSingleton<OpenIddictLinqToDBTokenStoreResolver>();
+            builder.Services.TryAddSingleton<OpenIddictLinqToDBApplicationStoreResolver.TypeResolutionCache>();
+            builder.Services.TryAddSingleton<OpenIddictLinqToDBAuthorizationStoreResolver.TypeResolutionCache>();
+            builder.Services.TryAddSingleton<OpenIddictLinqToDBScopeStoreResolver.TypeResolutionCache>();
+            builder.Services.TryAddSingleton<OpenIddictLinqToDBTokenStoreResolver.TypeResolutionCache>();
 
-            //builder.Services.TryAddScoped(typeof(OpenIddictLinqToDBApplicationStore<,,,,>));
-            //builder.Services.TryAddScoped(typeof(OpenIddictLinqToDBAuthorizationStore<,,,,>));
-            //builder.Services.TryAddScoped(typeof(OpenIddictLinqToDBScopeStore<,,>));
-            //builder.Services.TryAddScoped(typeof(OpenIddictLinqToDBTokenStore<,,,,>));
+            builder.Services.TryAddScoped(typeof(OpenIddictLinqToDBApplicationStore<,,,,>));
+            builder.Services.TryAddScoped(typeof(OpenIddictLinqToDBAuthorizationStore<,,,,>));
+            builder.Services.TryAddScoped(typeof(OpenIddictLinqToDBScopeStore<,,>));
+            builder.Services.TryAddScoped(typeof(OpenIddictLinqToDBTokenStore<,,,,>));
 
             return new OpenIddictLinqToDBBuilder(builder.Services);
         }

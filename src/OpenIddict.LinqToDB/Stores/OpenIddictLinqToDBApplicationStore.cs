@@ -19,6 +19,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using LinqToDB;
+using LinqToDB.Data;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using OpenIddict.Abstractions;
@@ -35,7 +36,7 @@ namespace OpenIddict.LinqToDB
         OpenIddictLinqToDBApplicationStore<OpenIddictLinqToDBApplication,
                                                       OpenIddictLinqToDBAuthorization,
                                                       OpenIddictLinqToDBToken, TContext, string>
-        where TContext : DataContext
+        where TContext : DataConnection
     {
         public OpenIddictLinqToDBApplicationStore(
             IMemoryCache cache,
@@ -55,7 +56,7 @@ namespace OpenIddict.LinqToDB
         OpenIddictLinqToDBApplicationStore<OpenIddictLinqToDBApplication<TKey>,
                                                       OpenIddictLinqToDBAuthorization<TKey>,
                                                       OpenIddictLinqToDBToken<TKey>, TContext, TKey>
-        where TContext : DataContext
+        where TContext : DataConnection
         where TKey : IEquatable<TKey>
     {
         public OpenIddictLinqToDBApplicationStore(
@@ -79,7 +80,7 @@ namespace OpenIddict.LinqToDB
         where TApplication : OpenIddictLinqToDBApplication<TKey, TAuthorization, TToken>
         where TAuthorization : OpenIddictLinqToDBAuthorization<TKey, TApplication, TToken>
         where TToken : OpenIddictLinqToDBToken<TKey, TApplication, TAuthorization>
-        where TContext : DataContext
+        where TContext : DataConnection
         where TKey : IEquatable<TKey>
     {
         public OpenIddictLinqToDBApplicationStore(
@@ -102,6 +103,7 @@ namespace OpenIddict.LinqToDB
         /// </summary>
         protected TContext Context { get; }
 
+        //TODO: Check if we'd need options
         /// <summary>
         /// Gets the options associated with the current store.
         /// </summary>

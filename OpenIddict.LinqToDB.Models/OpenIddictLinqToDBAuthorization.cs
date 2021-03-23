@@ -7,12 +7,14 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using LinqToDB.Mapping;
 
 namespace OpenIddict.LinqToDB.Models
 {
     /// <summary>
     /// Represents an OpenIddict authorization.
     /// </summary>
+    [Table(Name = "OpenIddictAuthorizations")]
     public class OpenIddictLinqToDBAuthorization : OpenIddictLinqToDBAuthorization<string, OpenIddictLinqToDBApplication, OpenIddictLinqToDBToken>
     {
         public OpenIddictLinqToDBAuthorization()
@@ -47,38 +49,45 @@ namespace OpenIddict.LinqToDB.Models
         /// <summary>
         /// Gets or sets the concurrency token.
         /// </summary>
+        [Column(Name = "ConcurrencyToken")]
         public virtual string? ConcurrencyToken { get; set; } = Guid.NewGuid().ToString();
 
         /// <summary>
         /// Gets or sets the UTC creation date of the current authorization.
         /// </summary>
+        [Column(Name = "CreationDate")]
         public virtual DateTime? CreationDate { get; set; }
 
         /// <summary>
         /// Gets or sets the unique identifier associated with the current authorization.
         /// </summary>
+        [PrimaryKey, Identity, Column(Name = "Id", SkipOnInsert = false, SkipOnUpdate = true)]
         public virtual TKey? Id { get; set; }
 
         /// <summary>
         /// Gets or sets the additional properties serialized as a JSON object,
         /// or <c>null</c> if no bag was associated with the current authorization.
         /// </summary>
+        [Column(Name = "Properties")]
         public virtual string? Properties { get; set; }
 
         /// <summary>
         /// Gets or sets the scopes associated with the current
         /// authorization, serialized as a JSON array.
         /// </summary>
+        [Column(Name = "Scopes")]
         public virtual string? Scopes { get; set; }
 
         /// <summary>
         /// Gets or sets the status of the current authorization.
         /// </summary>
+        [Column(Name = "Status")]
         public virtual string? Status { get; set; }
 
         /// <summary>
         /// Gets or sets the subject associated with the current authorization.
         /// </summary>
+        [Column(Name = "Subject")]
         public virtual string? Subject { get; set; }
 
         /// <summary>
@@ -89,6 +98,7 @@ namespace OpenIddict.LinqToDB.Models
         /// <summary>
         /// Gets or sets the type of the current authorization.
         /// </summary>
+        [Column(Name = "Type")]
         public virtual string? Type { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
+using LinqToDB.Data;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Mvc.Server.Models;
@@ -21,8 +22,8 @@ namespace Mvc.Server
         {
             using var scope = _serviceProvider.CreateScope();
 
-            var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            await context.Database.EnsureCreatedAsync(cancellationToken);
+            var context = scope.ServiceProvider.GetRequiredService<DataConnection>();
+            //await context.Database.EnsureCreatedAsync(cancellationToken);
 
             await RegisterApplicationsAsync(scope.ServiceProvider);
             await RegisterScopesAsync(scope.ServiceProvider);
@@ -85,6 +86,7 @@ namespace Mvc.Server
                     await manager.CreateAsync(new OpenIddictApplicationDescriptor
                     {
                         ClientId = "postman",
+                        ClientSecret = "postman-secret",
                         ConsentType = ConsentTypes.Systematic,
                         DisplayName = "Postman",
                         RedirectUris =

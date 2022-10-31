@@ -4,18 +4,15 @@
  * the license and the contributors participating to this project.
  */
 
-using Microsoft.AspNetCore.Authentication;
+namespace OpenIddict.Validation.AspNetCore;
 
-namespace OpenIddict.Validation.AspNetCore
+/// <summary>
+/// Provides various settings needed to configure the OpenIddict ASP.NET Core validation integration.
+/// </summary>
+public class OpenIddictValidationAspNetCoreOptions : AuthenticationSchemeOptions
 {
     /// <summary>
-    /// Provides various settings needed to configure the OpenIddict ASP.NET Core validation integration.
+    /// Gets or sets the optional "realm" value returned to the caller as part of the WWW-Authenticate header.
     /// </summary>
-    public class OpenIddictValidationAspNetCoreOptions : AuthenticationSchemeOptions
-    {
-        /// <summary>
-        /// Gets or sets the optional "realm" value returned to the caller as part of the WWW-Authenticate header.
-        /// </summary>
-        public string? Realm { get; set; }
-    }
+    public string? Realm { get; set; }
 }

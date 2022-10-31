@@ -5,8 +5,16 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <PolySharpIncludeGeneratedTypes>System.Diagnostics.CodeAnalysis.StringSyntaxAttribute</PolySharpIncludeGeneratedTypes>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <Description>Relational entities for the OpenIddict Entity Framework 6.x stores.</Description>
     <PackageTags>$(PackageTags);entityframework;models</PackageTags>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Using Remove="System.Net.Http" />
+  </ItemGroup>
 
 </Project>

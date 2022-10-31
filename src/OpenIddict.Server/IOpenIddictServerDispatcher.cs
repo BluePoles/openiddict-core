@@ -4,13 +4,9 @@
  * the license and the contributors participating to this project.
  */
 
-using System.Threading.Tasks;
-using static OpenIddict.Server.OpenIddictServerEvents;
+namespace OpenIddict.Server;
 
-namespace OpenIddict.Server
+public interface IOpenIddictServerDispatcher
 {
-    public interface IOpenIddictServerDispatcher
-    {
-        ValueTask DispatchAsync<TContext>(TContext context) where TContext : BaseContext;
-    }
+    ValueTask DispatchAsync<TContext>(TContext context) where TContext : BaseContext;
 }

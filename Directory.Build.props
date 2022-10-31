@@ -4,15 +4,18 @@
 
   <PropertyGroup>
     <LangVersion>preview</LangVersion>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <AnalysisLevel>preview</AnalysisLevel>
     <NoWarn>$(NoWarn);CS1591;NU5118;NU5128</NoWarn>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>portable</DebugType>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <CodeAnalysisRuleset>$(MSBuildThisFileDirectory)eng\CodeAnalysis.ruleset</CodeAnalysisRuleset>
     <EnableXlfLocalization>false</EnableXlfLocalization>
+    <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -41,6 +44,7 @@
   <PropertyGroup>
     <RepoRelativeProjectDir>$([MSBuild]::MakeRelative($(RepoRoot), $(MSBuildProjectDirectory)))</RepoRelativeProjectDir>
     <WarnOnPackingNonPackableProject>false</WarnOnPackingNonPackableProject>
+    <CheckEolTargetFramework>false</CheckEolTargetFramework>
   </PropertyGroup>
 
   <!--
@@ -61,13 +65,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" PrivateAssets="All" />
-    <PackageReference Include="TunnelVisionLabs.ReferenceAssemblyAnnotator" PrivateAssets="All" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageDownload Include="Microsoft.NETCore.App.Ref" Version="[3.1.0]" />
+    <!--
+      Note: OpenIddict uses PolySharp to dynamically generate polyfills for types that are not available on
+      some of the targeted TFMs (e.g Index, Range or nullable attributes on .NET Framework/.NET Standard).
+    -->
+    <PackageReference Include="PolySharp" Version="1.6.0" IsImplicitlyDefined="true"
+                      PrivateAssets="all" Condition=" '$(DisablePolySharp)' != 'true' " />
   </ItemGroup>
 
   <ItemGroup>

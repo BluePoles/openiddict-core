@@ -1,17 +1,21 @@
 {
+  "sdk": {
+    "version": "6.0.402"
+  },
+
   "tools": {
-    "dotnet": "5.0.201",
+    "dotnet": "6.0.402",
 
     "runtimes": {
       "aspnetcore": [
-        "2.1.26",
-        "3.1.13"
+        "2.1.30",
+        "3.1.30"
       ]
     }
   },
 
   "msbuild-sdks": {
-    "Microsoft.DotNet.Arcade.Sdk": "5.0.0-beta.20510.1",
-    "Microsoft.DotNet.Helix.Sdk": "5.0.0-beta.20510.1"
+    "Microsoft.DotNet.Arcade.Sdk": "6.0.0-beta.21519.3",
+    "Microsoft.DotNet.Helix.Sdk": "6.0.0-beta.21519.3"
   }
 }

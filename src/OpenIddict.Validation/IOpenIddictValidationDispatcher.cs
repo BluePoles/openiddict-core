@@ -4,13 +4,9 @@
  * the license and the contributors participating to this project.
  */
 
-using System.Threading.Tasks;
-using static OpenIddict.Validation.OpenIddictValidationEvents;
+namespace OpenIddict.Validation;
 
-namespace OpenIddict.Validation
+public interface IOpenIddictValidationDispatcher
 {
-    public interface IOpenIddictValidationDispatcher
-    {
-        ValueTask DispatchAsync<TContext>(TContext context) where TContext : BaseContext;
-    }
+    ValueTask DispatchAsync<TContext>(TContext context) where TContext : BaseContext;
 }

@@ -4,12 +4,12 @@
  * the license and the contributors participating to this project.
  */
 
-using System.Threading.Tasks;
+using System.ComponentModel;
 
-namespace OpenIddict.Server
+namespace OpenIddict.Server;
+
+[EditorBrowsable(EditorBrowsableState.Never)]
+public interface IOpenIddictServerFactory
 {
-    public interface IOpenIddictServerFactory
-    {
-        ValueTask<OpenIddictServerTransaction> CreateTransactionAsync();
-    }
+    ValueTask<OpenIddictServerTransaction> CreateTransactionAsync();
 }

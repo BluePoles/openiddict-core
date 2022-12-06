@@ -4,12 +4,12 @@
  * the license and the contributors participating to this project.
  */
 
-using System.Threading.Tasks;
+using System.ComponentModel;
 
-namespace OpenIddict.Validation
+namespace OpenIddict.Validation;
+
+[EditorBrowsable(EditorBrowsableState.Never)]
+public interface IOpenIddictValidationFactory
 {
-    public interface IOpenIddictValidationFactory
-    {
-        ValueTask<OpenIddictValidationTransaction> CreateTransactionAsync();
-    }
+    ValueTask<OpenIddictValidationTransaction> CreateTransactionAsync();
 }

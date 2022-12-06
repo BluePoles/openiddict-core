@@ -4,478 +4,650 @@
  * the license and the contributors participating to this project.
  */
 
-using System;
 using System.ComponentModel;
-using System.Threading.Tasks;
-using static OpenIddict.Server.OpenIddictServerEvents;
 
-namespace OpenIddict.Server
+namespace OpenIddict.Server;
+
+[EditorBrowsable(EditorBrowsableState.Advanced)]
+public static class OpenIddictServerHandlerFilters
 {
-    [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public static class OpenIddictServerHandlerFilters
+    /// <summary>
+    /// Represents a filter that excludes the associated handlers if no access token is generated.
+    /// </summary>
+    public sealed class RequireAccessTokenGenerated : IOpenIddictServerHandlerFilter<ProcessSignInContext>
     {
-        /// <summary>
-        /// Represents a filter that excludes the associated handlers if no access token is generated.
-        /// </summary>
-        public class RequireAccessTokenGenerated : IOpenIddictServerHandlerFilter<ProcessSignInContext>
+        public ValueTask<bool> IsActiveAsync(ProcessSignInContext context)
         {
-            public ValueTask<bool> IsActiveAsync(ProcessSignInContext context)
+            if (context is null)
             {
-                if (context is null)
-                {
-                    throw new ArgumentNullException(nameof(context));
-                }
-
-                return new ValueTask<bool>(context.GenerateAccessToken);
+                throw new ArgumentNullException(nameof(context));
             }
+
+            return new(context.GenerateAccessToken);
         }
+    }
 
-        /// <summary>
-        /// Represents a filter that excludes the associated handlers if no authorization code is generated.
-        /// </summary>
-        public class RequireAuthorizationCodeGenerated : IOpenIddictServerHandlerFilter<ProcessSignInContext>
+    /// <summary>
+    /// Represents a filter that excludes the associated handlers if no access token is validated.
+    /// </summary>
+    public sealed class RequireAccessTokenValidated : IOpenIddictServerHandlerFilter<ProcessAuthenticationContext>
+    {
+        public ValueTask<bool> IsActiveAsync(ProcessAuthenticationContext context)
         {
-            public ValueTask<bool> IsActiveAsync(ProcessSignInContext context)
+            if (context is null)
             {
-                if (context is null)
-                {
-                    throw new ArgumentNullException(nameof(context));
-                }
-
-                return new ValueTask<bool>(context.GenerateAuthorizationCode);
+                throw new ArgumentNullException(nameof(context));
             }
+
+            return new(context.ValidateAccessToken);
         }
+    }
 
-        /// <summary>
-        /// Represents a filter that excludes the associated handlers if the request is not an authorization request.
-        /// </summary>
-        public class RequireAuthorizationRequest : IOpenIddictServerHandlerFilter<BaseContext>
+    /// <summary>
+    /// Represents a filter that excludes the associated handlers if no authorization code is generated.
+    /// </summary>
+    public sealed class RequireAuthorizationCodeGenerated : IOpenIddictServerHandlerFilter<ProcessSignInContext>
+    {
+        public ValueTask<bool> IsActiveAsync(ProcessSignInContext context)
         {
-            public ValueTask<bool> IsActiveAsync(BaseContext context)
+            if (context is null)
             {
-                if (context is null)
-                {
-                    throw new ArgumentNullException(nameof(context));
-                }
-
-                return new ValueTask<bool>(context.EndpointType == OpenIddictServerEndpointType.Authorization);
+                throw new ArgumentNullException(nameof(context));
             }
+
+            return new(context.GenerateAuthorizationCode);
         }
+    }
 
-        /// <summary>
-        /// Represents a filter that excludes the associated handlers if authorization storage was not enabled.
-        /// </summary>
-        public class RequireAuthorizationStorageEnabled : IOpenIddictServerHandlerFilter<BaseContext>
+    /// <summary>
+    /// Represents a filter that excludes the associated handlers if no authorization code is validated.
+    /// </summary>
+    public sealed class RequireAuthorizationCodeValidated : IOpenIddictServerHandlerFilter<ProcessAuthenticationContext>
+    {
+        public ValueTask<bool> IsActiveAsync(ProcessAuthenticationContext context)
         {
-            public ValueTask<bool> IsActiveAsync(BaseContext context)
+            if (context is null)
             {
-                if (context is null)
-                {
-                    throw new ArgumentNullException(nameof(context));
-                }
-
-                return new ValueTask<bool>(!context.Options.DisableAuthorizationStorage);
+                throw new ArgumentNullException(nameof(context));
             }
+
+            return new(context.ValidateAuthorizationCode);
         }
+    }
 
-        /// <summary>
-        /// Represents a filter that excludes the associated handlers when no client identifier is received.
-        /// </summary>
-        public class RequireClientIdParameter : IOpenIddictServerHandlerFilter<BaseContext>
+    /// <summary>
+    /// Represents a filter that excludes the associated handlers if the request is not an authorization request.
+    /// </summary>
+    public sealed class RequireAuthorizationRequest : IOpenIddictServerHandlerFilter<BaseContext>
+    {
+        public ValueTask<bool> IsActiveAsync(BaseContext context)
         {
-            public ValueTask<bool> IsActiveAsync(BaseContext context)
+            if (context is null)
             {
-                if (context is null)
-                {
-                    throw new ArgumentNullException(nameof(context));
-                }
-
-                return new ValueTask<bool>(!string.IsNullOrEmpty(context.Transaction.Request?.ClientId));
+                throw new ArgumentNullException(nameof(context));
             }
+
+            return new(context.EndpointType is OpenIddictServerEndpointType.Authorization);
         }
+    }
 
-        /// <summary>
-        /// Represents a filter that excludes the associated handlers if the request is not a configuration request.
-        /// </summary>
-        public class RequireConfigurationRequest : IOpenIddictServerHandlerFilter<BaseContext>
+    /// <summary>
+    /// Represents a filter that excludes the associated handlers if authorization storage was not enabled.
+    /// </summary>
+    public sealed class RequireAuthorizationStorageEnabled : IOpenIddictServerHandlerFilter<BaseContext>
+    {
+        public ValueTask<bool> IsActiveAsync(BaseContext context)
         {
-            public ValueTask<bool> IsActiveAsync(BaseContext context)
+            if (context is null)
             {
-                if (context is null)
-                {
-                    throw new ArgumentNullException(nameof(context));
-                }
-
-                return new ValueTask<bool>(context.EndpointType == OpenIddictServerEndpointType.Configuration);
+                throw new ArgumentNullException(nameof(context));
             }
+
+            return new(!context.Options.DisableAuthorizationStorage);
         }
+    }
 
-        /// <summary>
-        /// Represents a filter that excludes the associated handlers if the request is not a cryptography request.
-        /// </summary>
-        public class RequireCryptographyRequest : IOpenIddictServerHandlerFilter<BaseContext>
+    /// <summary>
+    /// Represents a filter that excludes the associated handlers when no client identifier is received.
+    /// </summary>
+    public sealed class RequireClientIdParameter : IOpenIddictServerHandlerFilter<BaseContext>
+    {
+        public ValueTask<bool> IsActiveAsync(BaseContext context)
         {
-            public ValueTask<bool> IsActiveAsync(BaseContext context)
+            if (context is null)
             {
-                if (context is null)
-                {
-                    throw new ArgumentNullException(nameof(context));
-                }
-
-                return new ValueTask<bool>(context.EndpointType == OpenIddictServerEndpointType.Cryptography);
+                throw new ArgumentNullException(nameof(context));
             }
+
+            return new(!string.IsNullOrEmpty(context.Transaction.Request?.ClientId));
         }
+    }
 
-        /// <summary>
-        /// Represents a filter that excludes the associated handlers if the degraded mode was not enabled.
-        /// </summary>
-        public class RequireDegradedModeDisabled : IOpenIddictServerHandlerFilter<BaseContext>
+    /// <summary>
+    /// Represents a filter that excludes the associated handlers if the request is not a configuration request.
+    /// </summary>
+    public sealed class RequireConfigurationRequest : IOpenIddictServerHandlerFilter<BaseContext>
+    {
+        public ValueTask<bool> IsActiveAsync(BaseContext context)
         {
-            public ValueTask<bool> IsActiveAsync(BaseContext context)
+            if (context is null)
             {
-                if (context is null)
-                {
-                    throw new ArgumentNullException(nameof(context));
-                }
-
-                return new ValueTask<bool>(!context.Options.EnableDegradedMode);
+                throw new ArgumentNullException(nameof(context));
             }
+
+            return new(context.EndpointType is OpenIddictServerEndpointType.Configuration);
         }
+    }
 
-        /// <summary>
-        /// Represents a filter that excludes the associated handlers if no device code is generated.
-        /// </summary>
-        public class RequireDeviceCodeGenerated : IOpenIddictServerHandlerFilter<ProcessSignInContext>
+    /// <summary>
+    /// Represents a filter that excludes the associated handlers if the request is not a cryptography request.
+    /// </summary>
+    public sealed class RequireCryptographyRequest : IOpenIddictServerHandlerFilter<BaseContext>
+    {
+        public ValueTask<bool> IsActiveAsync(BaseContext context)
         {
-            public ValueTask<bool> IsActiveAsync(ProcessSignInContext context)
+            if (context is null)
             {
-                if (context is null)
-                {
-                    throw new ArgumentNullException(nameof(context));
-                }
-
-                return new ValueTask<bool>(context.GenerateDeviceCode);
+                throw new ArgumentNullException(nameof(context));
             }
+
+            return new(context.EndpointType is OpenIddictServerEndpointType.Cryptography);
         }
+    }
 
-        /// <summary>
-        /// Represents a filter that excludes the associated handlers if the request is not a device request.
-        /// </summary>
-        public class RequireDeviceRequest : IOpenIddictServerHandlerFilter<BaseContext>
+    /// <summary>
+    /// Represents a filter that excludes the associated handlers if the degraded mode was not enabled.
+    /// </summary>
+    public sealed class RequireDegradedModeDisabled : IOpenIddictServerHandlerFilter<BaseContext>
+    {
+        public ValueTask<bool> IsActiveAsync(BaseContext context)
         {
-            public ValueTask<bool> IsActiveAsync(BaseContext context)
+            if (context is null)
             {
-                if (context is null)
-                {
-                    throw new ArgumentNullException(nameof(context));
-                }
-
-                return new ValueTask<bool>(context.EndpointType == OpenIddictServerEndpointType.Device);
+                throw new ArgumentNullException(nameof(context));
             }
+
+            return new(!context.Options.EnableDegradedMode);
         }
+    }
 
-        /// <summary>
-        /// Represents a filter that excludes the associated handlers if endpoint permissions were disabled.
-        /// </summary>
-        public class RequireEndpointPermissionsEnabled : IOpenIddictServerHandlerFilter<BaseContext>
+    /// <summary>
+    /// Represents a filter that excludes the associated handlers if no device code is generated.
+    /// </summary>
+    public sealed class RequireDeviceCodeGenerated : IOpenIddictServerHandlerFilter<ProcessSignInContext>
+    {
+        public ValueTask<bool> IsActiveAsync(ProcessSignInContext context)
         {
-            public ValueTask<bool> IsActiveAsync(BaseContext context)
+            if (context is null)
             {
-                if (context is null)
-                {
-                    throw new ArgumentNullException(nameof(context));
-                }
-
-                return new ValueTask<bool>(!context.Options.IgnoreEndpointPermissions);
+                throw new ArgumentNullException(nameof(context));
             }
+
+            return new(context.GenerateDeviceCode);
         }
+    }
 
-        /// <summary>
-        /// Represents a filter that excludes the associated handlers if grant type permissions were disabled.
-        /// </summary>
-        public class RequireGrantTypePermissionsEnabled : IOpenIddictServerHandlerFilter<BaseContext>
+    /// <summary>
+    /// Represents a filter that excludes the associated handlers if no device code is validated.
+    /// </summary>
+    public sealed class RequireDeviceCodeValidated : IOpenIddictServerHandlerFilter<ProcessAuthenticationContext>
+    {
+        public ValueTask<bool> IsActiveAsync(ProcessAuthenticationContext context)
         {
-            public ValueTask<bool> IsActiveAsync(BaseContext context)
+            if (context is null)
             {
-                if (context is null)
-                {
-                    throw new ArgumentNullException(nameof(context));
-                }
-
-                return new ValueTask<bool>(!context.Options.IgnoreGrantTypePermissions);
+                throw new ArgumentNullException(nameof(context));
             }
+
+            return new(context.ValidateDeviceCode);
         }
+    }
 
-        /// <summary>
-        /// Represents a filter that excludes the associated handlers if no identity token is generated.
-        /// </summary>
-        public class RequireIdentityTokenGenerated : IOpenIddictServerHandlerFilter<ProcessSignInContext>
+    /// <summary>
+    /// Represents a filter that excludes the associated handlers if the request is not a device request.
+    /// </summary>
+    public sealed class RequireDeviceRequest : IOpenIddictServerHandlerFilter<BaseContext>
+    {
+        public ValueTask<bool> IsActiveAsync(BaseContext context)
         {
-            public ValueTask<bool> IsActiveAsync(ProcessSignInContext context)
+            if (context is null)
             {
-                if (context is null)
-                {
-                    throw new ArgumentNullException(nameof(context));
-                }
-
-                return new ValueTask<bool>(context.GenerateIdentityToken);
+                throw new ArgumentNullException(nameof(context));
             }
+
+            return new(context.EndpointType is OpenIddictServerEndpointType.Device);
         }
+    }
 
-        /// <summary>
-        /// Represents a filter that excludes the associated handlers if the request is not an introspection request.
-        /// </summary>
-        public class RequireIntrospectionRequest : IOpenIddictServerHandlerFilter<BaseContext>
+    /// <summary>
+    /// Represents a filter that excludes the associated handlers if endpoint permissions were disabled.
+    /// </summary>
+    public sealed class RequireEndpointPermissionsEnabled : IOpenIddictServerHandlerFilter<BaseContext>
+    {
+        public ValueTask<bool> IsActiveAsync(BaseContext context)
         {
-            public ValueTask<bool> IsActiveAsync(BaseContext context)
+            if (context is null)
             {
-                if (context is null)
-                {
-                    throw new ArgumentNullException(nameof(context));
-                }
-
-                return new ValueTask<bool>(context.EndpointType == OpenIddictServerEndpointType.Introspection);
+                throw new ArgumentNullException(nameof(context));
             }
+
+            return new(!context.Options.IgnoreEndpointPermissions);
         }
+    }
 
-        /// <summary>
-        /// Represents a filter that excludes the associated handlers if the request is not a logout request.
-        /// </summary>
-        public class RequireLogoutRequest : IOpenIddictServerHandlerFilter<BaseContext>
+    /// <summary>
+    /// Represents a filter that excludes the associated handlers if no generic token is validated.
+    /// </summary>
+    public sealed class RequireGenericTokenValidated : IOpenIddictServerHandlerFilter<ProcessAuthenticationContext>
+    {
+        public ValueTask<bool> IsActiveAsync(ProcessAuthenticationContext context)
         {
-            public ValueTask<bool> IsActiveAsync(BaseContext context)
+            if (context is null)
             {
-                if (context is null)
-                {
-                    throw new ArgumentNullException(nameof(context));
-                }
-
-                return new ValueTask<bool>(context.EndpointType == OpenIddictServerEndpointType.Logout);
+                throw new ArgumentNullException(nameof(context));
             }
+
+            return new(context.ValidateGenericToken);
         }
+    }
 
-        /// <summary>
-        /// Represents a filter that excludes the associated handlers when no post_logout_redirect_uri is received.
-        /// </summary>
-        public class RequirePostLogoutRedirectUriParameter : IOpenIddictServerHandlerFilter<BaseContext>
+    /// <summary>
+    /// Represents a filter that excludes the associated handlers if grant type permissions were disabled.
+    /// </summary>
+    public sealed class RequireGrantTypePermissionsEnabled : IOpenIddictServerHandlerFilter<BaseContext>
+    {
+        public ValueTask<bool> IsActiveAsync(BaseContext context)
         {
-            public ValueTask<bool> IsActiveAsync(BaseContext context)
+            if (context is null)
             {
-                if (context is null)
-                {
-                    throw new ArgumentNullException(nameof(context));
-                }
-
-                return new ValueTask<bool>(!string.IsNullOrEmpty(context.Transaction.Request?.PostLogoutRedirectUri));
+                throw new ArgumentNullException(nameof(context));
             }
+
+            return new(!context.Options.IgnoreGrantTypePermissions);
         }
+    }
 
-        /// <summary>
-        /// Represents a filter that excludes the associated handlers if reference access tokens are disabled.
-        /// </summary>
-        public class RequireReferenceAccessTokensEnabled : IOpenIddictServerHandlerFilter<BaseContext>
+    /// <summary>
+    /// Represents a filter that excludes the associated handlers if no identity token is generated.
+    /// </summary>
+    public sealed class RequireIdentityTokenGenerated : IOpenIddictServerHandlerFilter<ProcessSignInContext>
+    {
+        public ValueTask<bool> IsActiveAsync(ProcessSignInContext context)
         {
-            public ValueTask<bool> IsActiveAsync(BaseContext context)
+            if (context is null)
             {
-                if (context is null)
-                {
-                    throw new ArgumentNullException(nameof(context));
-                }
-
-                return new ValueTask<bool>(context.Options.UseReferenceAccessTokens);
+                throw new ArgumentNullException(nameof(context));
             }
+
+            return new(context.GenerateIdentityToken);
         }
+    }
 
-        /// <summary>
-        /// Represents a filter that excludes the associated handlers if reference refresh tokens are disabled.
-        /// </summary>
-        public class RequireReferenceRefreshTokensEnabled : IOpenIddictServerHandlerFilter<BaseContext>
+    /// <summary>
+    /// Represents a filter that excludes the associated handlers if no identity token is validated.
+    /// </summary>
+    public sealed class RequireIdentityTokenValidated : IOpenIddictServerHandlerFilter<ProcessAuthenticationContext>
+    {
+        public ValueTask<bool> IsActiveAsync(ProcessAuthenticationContext context)
         {
-            public ValueTask<bool> IsActiveAsync(BaseContext context)
+            if (context is null)
             {
-                if (context is null)
-                {
-                    throw new ArgumentNullException(nameof(context));
-                }
-
-                return new ValueTask<bool>(context.Options.UseReferenceRefreshTokens);
+                throw new ArgumentNullException(nameof(context));
             }
+
+            return new(context.ValidateIdentityToken);
         }
+    }
 
-        /// <summary>
-        /// Represents a filter that excludes the associated handlers if no refresh token is generated.
-        /// </summary>
-        public class RequireRefreshTokenGenerated : IOpenIddictServerHandlerFilter<ProcessSignInContext>
+    /// <summary>
+    /// Represents a filter that excludes the associated handlers if the request is not an introspection request.
+    /// </summary>
+    public sealed class RequireIntrospectionRequest : IOpenIddictServerHandlerFilter<BaseContext>
+    {
+        public ValueTask<bool> IsActiveAsync(BaseContext context)
         {
-            public ValueTask<bool> IsActiveAsync(ProcessSignInContext context)
+            if (context is null)
             {
-                if (context is null)
-                {
-                    throw new ArgumentNullException(nameof(context));
-                }
-
-                return new ValueTask<bool>(context.GenerateRefreshToken);
+                throw new ArgumentNullException(nameof(context));
             }
+
+            return new(context.EndpointType is OpenIddictServerEndpointType.Introspection);
         }
+    }
 
-        /// <summary>
-        /// Represents a filter that excludes the associated handlers if response type permissions were disabled.
-        /// </summary>
-        public class RequireResponseTypePermissionsEnabled : IOpenIddictServerHandlerFilter<BaseContext>
+    /// <summary>
+    /// Represents a filter that excludes the associated handlers if the selected token format is not JSON Web Token.
+    /// </summary>
+    public sealed class RequireJsonWebTokenFormat : IOpenIddictServerHandlerFilter<GenerateTokenContext>
+    {
+        public ValueTask<bool> IsActiveAsync(GenerateTokenContext context)
         {
-            public ValueTask<bool> IsActiveAsync(BaseContext context)
+            if (context is null)
             {
-                if (context is null)
-                {
-                    throw new ArgumentNullException(nameof(context));
-                }
-
-                return new ValueTask<bool>(!context.Options.IgnoreResponseTypePermissions);
+                throw new ArgumentNullException(nameof(context));
             }
+
+            return new(context.TokenFormat is TokenFormats.Jwt);
         }
+    }
 
-        /// <summary>
-        /// Represents a filter that excludes the associated handlers if the request is not a revocation request.
-        /// </summary>
-        public class RequireRevocationRequest : IOpenIddictServerHandlerFilter<BaseContext>
+    /// <summary>
+    /// Represents a filter that excludes the associated handlers if the request is not a logout request.
+    /// </summary>
+    public sealed class RequireLogoutRequest : IOpenIddictServerHandlerFilter<BaseContext>
+    {
+        public ValueTask<bool> IsActiveAsync(BaseContext context)
         {
-            public ValueTask<bool> IsActiveAsync(BaseContext context)
+            if (context is null)
             {
-                if (context is null)
-                {
-                    throw new ArgumentNullException(nameof(context));
-                }
-
-                return new ValueTask<bool>(context.EndpointType == OpenIddictServerEndpointType.Revocation);
+                throw new ArgumentNullException(nameof(context));
             }
+
+            return new(context.EndpointType is OpenIddictServerEndpointType.Logout);
         }
+    }
 
-        /// <summary>
-        /// Represents a filter that excludes the associated handlers if scope permissions were disabled.
-        /// </summary>
-        public class RequireScopePermissionsEnabled : IOpenIddictServerHandlerFilter<BaseContext>
+    /// <summary>
+    /// Represents a filter that excludes the associated handlers when no post_logout_redirect_uri is received.
+    /// </summary>
+    public sealed class RequirePostLogoutRedirectUriParameter : IOpenIddictServerHandlerFilter<BaseContext>
+    {
+        public ValueTask<bool> IsActiveAsync(BaseContext context)
         {
-            public ValueTask<bool> IsActiveAsync(BaseContext context)
+            if (context is null)
             {
-                if (context is null)
-                {
-                    throw new ArgumentNullException(nameof(context));
-                }
-
-                return new ValueTask<bool>(!context.Options.IgnoreScopePermissions);
+                throw new ArgumentNullException(nameof(context));
             }
+
+            return new(!string.IsNullOrEmpty(context.Transaction.Request?.PostLogoutRedirectUri));
         }
+    }
 
-        /// <summary>
-        /// Represents a filter that excludes the associated handlers if scope validation was not enabled.
-        /// </summary>
-        public class RequireScopeValidationEnabled : IOpenIddictServerHandlerFilter<BaseContext>
+    /// <summary>
+    /// Represents a filter that excludes the associated handlers if reference access tokens are disabled.
+    /// </summary>
+    public sealed class RequireReferenceAccessTokensEnabled : IOpenIddictServerHandlerFilter<BaseContext>
+    {
+        public ValueTask<bool> IsActiveAsync(BaseContext context)
         {
-            public ValueTask<bool> IsActiveAsync(BaseContext context)
+            if (context is null)
             {
-                if (context is null)
-                {
-                    throw new ArgumentNullException(nameof(context));
-                }
-
-                return new ValueTask<bool>(!context.Options.DisableScopeValidation);
+                throw new ArgumentNullException(nameof(context));
             }
+
+            return new(context.Options.UseReferenceAccessTokens);
         }
+    }
 
-        /// <summary>
-        /// Represents a filter that excludes the associated handlers if sliding refresh token expiration was disabled.
-        /// </summary>
-        public class RequireSlidingRefreshTokenExpirationEnabled : IOpenIddictServerHandlerFilter<BaseContext>
+    /// <summary>
+    /// Represents a filter that excludes the associated handlers if reference refresh tokens are disabled.
+    /// </summary>
+    public sealed class RequireReferenceRefreshTokensEnabled : IOpenIddictServerHandlerFilter<BaseContext>
+    {
+        public ValueTask<bool> IsActiveAsync(BaseContext context)
         {
-            public ValueTask<bool> IsActiveAsync(BaseContext context)
+            if (context is null)
             {
-                if (context is null)
-                {
-                    throw new ArgumentNullException(nameof(context));
-                }
-
-                return new ValueTask<bool>(!context.Options.DisableSlidingRefreshTokenExpiration);
+                throw new ArgumentNullException(nameof(context));
             }
+
+            return new(context.Options.UseReferenceRefreshTokens);
         }
+    }
 
-        /// <summary>
-        /// Represents a filter that excludes the associated handlers if the request is not a token request.
-        /// </summary>
-        public class RequireTokenRequest : IOpenIddictServerHandlerFilter<BaseContext>
+    /// <summary>
+    /// Represents a filter that excludes the associated handlers if no refresh token is generated.
+    /// </summary>
+    public sealed class RequireRefreshTokenGenerated : IOpenIddictServerHandlerFilter<ProcessSignInContext>
+    {
+        public ValueTask<bool> IsActiveAsync(ProcessSignInContext context)
         {
-            public ValueTask<bool> IsActiveAsync(BaseContext context)
+            if (context is null)
             {
-                if (context is null)
-                {
-                    throw new ArgumentNullException(nameof(context));
-                }
-
-                return new ValueTask<bool>(context.EndpointType == OpenIddictServerEndpointType.Token);
+                throw new ArgumentNullException(nameof(context));
             }
+
+            return new(context.GenerateRefreshToken);
         }
+    }
 
-        /// <summary>
-        /// Represents a filter that excludes the associated handlers if token storage was not enabled.
-        /// </summary>
-        public class RequireTokenStorageEnabled : IOpenIddictServerHandlerFilter<BaseContext>
+    /// <summary>
+    /// Represents a filter that excludes the associated handlers if no refresh token is validated.
+    /// </summary>
+    public sealed class RequireRefreshTokenValidated : IOpenIddictServerHandlerFilter<ProcessAuthenticationContext>
+    {
+        public ValueTask<bool> IsActiveAsync(ProcessAuthenticationContext context)
         {
-            public ValueTask<bool> IsActiveAsync(BaseContext context)
+            if (context is null)
             {
-                if (context is null)
-                {
-                    throw new ArgumentNullException(nameof(context));
-                }
-
-                return new ValueTask<bool>(!context.Options.DisableTokenStorage);
+                throw new ArgumentNullException(nameof(context));
             }
+
+            return new(context.ValidateRefreshToken);
         }
+    }
 
-        /// <summary>
-        /// Represents a filter that excludes the associated handlers if no user code is generated.
-        /// </summary>
-        public class RequireUserCodeGenerated : IOpenIddictServerHandlerFilter<ProcessSignInContext>
+    /// <summary>
+    /// Represents a filter that excludes the associated handlers if response type permissions were disabled.
+    /// </summary>
+    public sealed class RequireResponseTypePermissionsEnabled : IOpenIddictServerHandlerFilter<BaseContext>
+    {
+        public ValueTask<bool> IsActiveAsync(BaseContext context)
         {
-            public ValueTask<bool> IsActiveAsync(ProcessSignInContext context)
+            if (context is null)
             {
-                if (context is null)
-                {
-                    throw new ArgumentNullException(nameof(context));
-                }
-
-                return new ValueTask<bool>(context.GenerateUserCode);
+                throw new ArgumentNullException(nameof(context));
             }
+
+            return new(!context.Options.IgnoreResponseTypePermissions);
         }
+    }
 
-        /// <summary>
-        /// Represents a filter that excludes the associated handlers if the request is not a userinfo request.
-        /// </summary>
-        public class RequireUserinfoRequest : IOpenIddictServerHandlerFilter<BaseContext>
+    /// <summary>
+    /// Represents a filter that excludes the associated handlers if the request is not a revocation request.
+    /// </summary>
+    public sealed class RequireRevocationRequest : IOpenIddictServerHandlerFilter<BaseContext>
+    {
+        public ValueTask<bool> IsActiveAsync(BaseContext context)
         {
-            public ValueTask<bool> IsActiveAsync(BaseContext context)
+            if (context is null)
             {
-                if (context is null)
-                {
-                    throw new ArgumentNullException(nameof(context));
-                }
-
-                return new ValueTask<bool>(context.EndpointType == OpenIddictServerEndpointType.Userinfo);
+                throw new ArgumentNullException(nameof(context));
             }
+
+            return new(context.EndpointType is OpenIddictServerEndpointType.Revocation);
         }
+    }
 
-        /// <summary>
-        /// Represents a filter that excludes the associated handlers if the request is not a verification request.
-        /// </summary>
-        public class RequireVerificationRequest : IOpenIddictServerHandlerFilter<BaseContext>
+    /// <summary>
+    /// Represents a filter that excludes the associated handlers if scope permissions were disabled.
+    /// </summary>
+    public sealed class RequireScopePermissionsEnabled : IOpenIddictServerHandlerFilter<BaseContext>
+    {
+        public ValueTask<bool> IsActiveAsync(BaseContext context)
         {
-            public ValueTask<bool> IsActiveAsync(BaseContext context)
+            if (context is null)
             {
-                if (context is null)
-                {
-                    throw new ArgumentNullException(nameof(context));
-                }
-
-                return new ValueTask<bool>(context.EndpointType == OpenIddictServerEndpointType.Verification);
+                throw new ArgumentNullException(nameof(context));
             }
+
+            return new(!context.Options.IgnoreScopePermissions);
+        }
+    }
+
+    /// <summary>
+    /// Represents a filter that excludes the associated handlers if scope validation was not enabled.
+    /// </summary>
+    public sealed class RequireScopeValidationEnabled : IOpenIddictServerHandlerFilter<BaseContext>
+    {
+        public ValueTask<bool> IsActiveAsync(BaseContext context)
+        {
+            if (context is null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            return new(!context.Options.DisableScopeValidation);
+        }
+    }
+
+    /// <summary>
+    /// Represents a filter that excludes the associated handlers if sliding refresh token expiration was disabled.
+    /// </summary>
+    public sealed class RequireSlidingRefreshTokenExpirationEnabled : IOpenIddictServerHandlerFilter<BaseContext>
+    {
+        public ValueTask<bool> IsActiveAsync(BaseContext context)
+        {
+            if (context is null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            return new(!context.Options.DisableSlidingRefreshTokenExpiration);
+        }
+    }
+
+    /// <summary>
+    /// Represents a filter that excludes the associated handlers if no token entry is created in the database.
+    /// </summary>
+    public sealed class RequireTokenEntryCreated : IOpenIddictServerHandlerFilter<GenerateTokenContext>
+    {
+        public ValueTask<bool> IsActiveAsync(GenerateTokenContext context)
+        {
+            if (context is null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            return new(context.CreateTokenEntry);
+        }
+    }
+
+    /// <summary>
+    /// Represents a filter that excludes the associated handlers if token lifetime validation was disabled.
+    /// </summary>
+    public sealed class RequireTokenLifetimeValidationEnabled : IOpenIddictServerHandlerFilter<ValidateTokenContext>
+    {
+        public ValueTask<bool> IsActiveAsync(ValidateTokenContext context)
+        {
+            if (context is null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            return new(!context.DisableLifetimeValidation);
+        }
+    }
+
+    /// <summary>
+    /// Represents a filter that excludes the associated handlers if the token payload is not persisted in the database.
+    /// </summary>
+    public sealed class RequireTokenPayloadPersisted : IOpenIddictServerHandlerFilter<GenerateTokenContext>
+    {
+        public ValueTask<bool> IsActiveAsync(GenerateTokenContext context)
+        {
+            if (context is null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            return new(context.PersistTokenPayload);
+        }
+    }
+
+    /// <summary>
+    /// Represents a filter that excludes the associated handlers if the request is not a token request.
+    /// </summary>
+    public sealed class RequireTokenRequest : IOpenIddictServerHandlerFilter<BaseContext>
+    {
+        public ValueTask<bool> IsActiveAsync(BaseContext context)
+        {
+            if (context is null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            return new(context.EndpointType is OpenIddictServerEndpointType.Token);
+        }
+    }
+
+    /// <summary>
+    /// Represents a filter that excludes the associated handlers if token storage was not enabled.
+    /// </summary>
+    public sealed class RequireTokenStorageEnabled : IOpenIddictServerHandlerFilter<BaseContext>
+    {
+        public ValueTask<bool> IsActiveAsync(BaseContext context)
+        {
+            if (context is null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            return new(!context.Options.DisableTokenStorage);
+        }
+    }
+
+    /// <summary>
+    /// Represents a filter that excludes the associated handlers if no user code is generated.
+    /// </summary>
+    public sealed class RequireUserCodeGenerated : IOpenIddictServerHandlerFilter<ProcessSignInContext>
+    {
+        public ValueTask<bool> IsActiveAsync(ProcessSignInContext context)
+        {
+            if (context is null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            return new(context.GenerateUserCode);
+        }
+    }
+
+    /// <summary>
+    /// Represents a filter that excludes the associated handlers if no user code is validated.
+    /// </summary>
+    public sealed class RequireUserCodeValidated : IOpenIddictServerHandlerFilter<ProcessAuthenticationContext>
+    {
+        public ValueTask<bool> IsActiveAsync(ProcessAuthenticationContext context)
+        {
+            if (context is null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            return new(context.ValidateUserCode);
+        }
+    }
+
+    /// <summary>
+    /// Represents a filter that excludes the associated handlers if the request is not a userinfo request.
+    /// </summary>
+    public sealed class RequireUserinfoRequest : IOpenIddictServerHandlerFilter<BaseContext>
+    {
+        public ValueTask<bool> IsActiveAsync(BaseContext context)
+        {
+            if (context is null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            return new(context.EndpointType is OpenIddictServerEndpointType.Userinfo);
+        }
+    }
+
+    /// <summary>
+    /// Represents a filter that excludes the associated handlers if the request is not a verification request.
+    /// </summary>
+    public sealed class RequireVerificationRequest : IOpenIddictServerHandlerFilter<BaseContext>
+    {
+        public ValueTask<bool> IsActiveAsync(BaseContext context)
+        {
+            if (context is null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            return new(context.EndpointType is OpenIddictServerEndpointType.Verification);
         }
     }
 }

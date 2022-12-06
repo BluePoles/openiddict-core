@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
+    <DisablePolySharp>true</DisablePolySharp>
     <SignAssembly>false</SignAssembly>
     <PublicSign>false</PublicSign>
   </PropertyGroup>
@@ -14,6 +15,12 @@
   <ItemGroup>
     <PackageReference Include="MongoDB.Bson" />
     <PackageReference Include="System.Collections.Immutable" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="MongoDB.Bson" />
+    <Using Include="MongoDB.Bson.Serialization.Attributes" />
+    <Using Remove="System.Net.Http" />
   </ItemGroup>
 
 </Project>
